@@ -4,7 +4,7 @@ import { WebhookEvent } from "@clerk/nextjs/server";
 import { db } from "@/lib/db";
 
 export async function POST(req: Request) {
-  const SIGNING_SECRET = process.env.SIGNING_SECRET;
+  const SIGNING_SECRET = process.env.CLERK_SECRET_KEY;
 
   if (!SIGNING_SECRET) {
     throw new Error(
@@ -43,7 +43,7 @@ export async function POST(req: Request) {
   const eventType = evt.type;
 
   if (eventType === "user.created") {
-    await db.user.create({
+    await db.users.create({
       data: {
         clerkId: evt.data.id,
         username: evt.data.username!,
@@ -54,7 +54,7 @@ export async function POST(req: Request) {
     });
   }
   if (eventType === "user.updated") {
-    await db.user.update({
+    await db.users.update({
       where: { clerkId: evt.data.id },
       data: {
         username: evt.data.username!,
@@ -65,7 +65,7 @@ export async function POST(req: Request) {
     });
   }
   if (eventType === "user.deleted") {
-    await db.user.delete({
+    await db.users.delete({
       where: { clerkId: evt.data.id },
     });
   }
